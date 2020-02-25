@@ -335,6 +335,12 @@ int main(int argc, char* argv[]) {
     // Invoke the function that optionally provides default command-line options.
     __set_default_command_line_options();
 
+#if 0
+    uint8_t* ptr = (uint8_t*)0x40000000;
+    *ptr = 0x42;
+    __spike_return(12345);
+#endif
+
     if (process_args(default_argc, default_argv)
             && process_args(argc, argv)) {
         initialize();
