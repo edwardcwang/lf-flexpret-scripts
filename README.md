@@ -2,10 +2,15 @@ Miscellaneous scripts for LF/FlexPRET.
 
 Toolchain
 =========
+Make sure you have `spike` and `riscv64-unknown-elf-gcc` on your PATH.
+
+You can get the toolchains below:
+
 https://static.dev.sifive.com/dev-tools/riscv64-unknown-elf-gcc-8.3.0-2019.08.0-x86_64-linux-ubuntu14.tar.gz
 https://github.com/edwardcwang/riscv-toolchains/releases/download/toolchains/riscv64-unknown-elf-gcc-8.3.0-2019.08.0-x86_64-linux-ubuntu14.tar.gz
 
 https://www.sifive.com/boards
+
 
 Bare Metal RISC-V
 =================
