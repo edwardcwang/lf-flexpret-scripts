@@ -1,6 +1,8 @@
 #ifndef _SPIKE_UTIL
 #define _SPIKE_UTIL
 
+#include <stdint.h>
+
 /**
  * Halt the spike simulation and return a value.
  * See https://github.com/riscv/riscv-tests/blob/master/benchmarks/common/syscalls.c#L56
