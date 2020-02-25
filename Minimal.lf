@@ -3,7 +3,10 @@ target C;
 main reactor Minimal {
     timer t;
     reaction(t) {=
-        printf("Hello World.\n");
+        #include "spike_util.c"
+        uint8_t* ptr = (uint8_t*)0x40000000;
+        *ptr = 0x42;
+        __spike_return(12345);
     =}
    
 }
