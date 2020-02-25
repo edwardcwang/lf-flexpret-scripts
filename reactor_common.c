@@ -628,11 +628,18 @@ int nanosleep(const struct timespec *req, struct timespec *rem) {
 }
 #endif
 // ********** End Windows Support
+#include <_ansi.h>
+#include <reent.h>
+#include <sys/types.h>
+#include <sys/time.h>
 
 int clock_gettime(clockid_t clk_id, struct timespec *tp) {
-    return 0;
+    struct timeval now;
+    _gettimeofday_r(_REENT, &now, NULL);
+    tp->tv_sec = now.tv_sec;
+    tp->tv_nsec = now.tv_usec * 1000;
 }
 
-int nanosleep(const struct timespec *req, struct timespec *rem) {
-    return 0;
-}
+//int nanosleep(const struct timespec *req, struct timespec *rem) {
+//    return 0;
+//}

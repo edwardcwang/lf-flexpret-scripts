@@ -5,22 +5,7 @@
 void minimal_rfunc_0(void* instance_args) {
     
     #line 5 "file:/home/marten/git/lingua-franca/xtext/org.icyphy.linguafranca/src/test/C/Minimal.lf"
-    //printf("Hello World.\n");
-    char* ptr = 0x40000000;
-    *ptr = 0x42;
-    *ptr = 0x42;
-    *ptr = 0x42;
-    *ptr = 0x42;
-    *ptr = 0x42;
-    *ptr = 0x42;
-    *ptr = 0x42;
-    *ptr = 0x42;
-    *ptr = 0x42;
-    *ptr = 0x42;
-    *ptr = 0x42;
-    *ptr = 0x42;
-    *ptr = 0x42;
-    *ptr = 0x42;
+    uint8_t* ptr = (uint8_t*)0x40000000;
     *ptr = 0x42;
 }
 // =============== END reactor class Minimal
