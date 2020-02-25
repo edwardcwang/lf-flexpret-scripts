@@ -17,3 +17,11 @@ _start:
 
   // jump to main
   call main
+
+// Expose tohost and fromhost to control
+// https://www.pygears.org/blog/riscv/setup.html
+.data
+  .global tohost
+tohost:   .dword 0
+  .global fromhost
+fromhost: .dword 0
