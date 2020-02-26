@@ -41,6 +41,8 @@
 #define right(i)  (((i) << 1) + 1)
 #define parent(i) ((i) >> 1)
 
+pqueue_t q[100];
+
 pqueue_t *
 pqueue_init(size_t n,
             pqueue_cmp_pri_f cmppri,
@@ -49,16 +51,16 @@ pqueue_init(size_t n,
             pqueue_set_pos_f setpos,
             pqueue_eq_elem_f eqelem,
             pqueue_print_entry_f prt) {
-    pqueue_t *q;
+    //pqueue_t* q;
 
-    if (!(q = malloc(sizeof(pqueue_t))))
-        return NULL;
+    // if (!(q = malloc(sizeof(pqueue_t))))
+    //     return NULL;
 
     /* Need to allocate n+1 elements since element 0 isn't used. */
-    if (!(q->d = malloc((n + 1) * sizeof(void *)))) {
-        free(q);
-        return NULL;
-    }
+    // if (!(q->d = malloc((n + 1) * sizeof(void *)))) {
+    //     free(q);
+    //     return NULL;
+    // }
 
     q->size = 1;
     q->avail = q->step = (n+1);  /* see comment above about n+1 */
@@ -72,8 +74,8 @@ pqueue_init(size_t n,
 }
 
 void pqueue_free(pqueue_t *q) {
-    free(q->d);
-    free(q);
+    //free(q->d);
+    //free(q);
 }
 
 

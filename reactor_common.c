@@ -628,16 +628,25 @@ int nanosleep(const struct timespec *req, struct timespec *rem) {
 }
 #endif
 // ********** End Windows Support
-#include <_ansi.h>
-#include <reent.h>
-#include <sys/types.h>
-#include <sys/time.h>
 
 int clock_gettime(clockid_t clk_id, struct timespec *tp) {
-    struct timeval now;
-    _gettimeofday_r(_REENT, &now, NULL);
-    tp->tv_sec = now.tv_sec;
-    tp->tv_nsec = now.tv_usec * 1000;
+    uint32_t high;
+    uint32_t low;
+    
+    asm(
+    "again:\n"
+        "rdtimeh t0\n"
+        "rdtime %1\n"
+        "rdtimeh %0\n"
+        "bne t0, %0, again"
+    : "=r"(low), "=r"(high)// outputs
+    : // inputs
+    : "t0" // clobbers
+    );
+
+
+    tp->tv_sec = 0;
+    tp->tv_nsec = 0;
 }
 
 //int nanosleep(const struct timespec *req, struct timespec *rem) {
