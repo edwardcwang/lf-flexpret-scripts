@@ -3,7 +3,7 @@ set -ex
 set -euo pipefail
 
 # Grab the PC start address from the ELF file
-pc_start=$(riscv64-unknown-elf-objdump -x Minimal | grep "0 _start" | cut -d " " -f1)
+pc_start=$(riscv64-unknown-elf-objdump -x $1 | grep "0 _start" | cut -d " " -f1)
 echo "PC starts at: ${pc_start}"
 
 # Use -d for single-step debugging
