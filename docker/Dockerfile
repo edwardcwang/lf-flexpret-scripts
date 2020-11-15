@@ -9,7 +9,7 @@ RUN git clone https://github.com/riscv/riscv-tools.git /tmp/riscv-tools\
     && cd /tmp/riscv-tools \
     && git checkout b266e97760fbe57feee534941f890d0cde14245a \
     && git submodule update --init --recursive \
-    && ./build.sh \
+    && ./build-rv32ima.sh \
     && rm -rf /tmp/riscv-tools
 
 # Install Lingua Franca
@@ -29,4 +29,5 @@ RUN git clone https://github.com/pretis/flexpret.git
     # && make run
 
 # Clone Project Repo
-RUN git clone https://github.com/edwardcwang/lf-flexpret-scripts.git 
+RUN git clone https://github.com/edwardcwang/lf-flexpret-scripts.git \
+    && echo 'export PATH="/lf-flexpret-scripts/scripts:$PATH"' >> ~/.bashrc

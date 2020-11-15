@@ -33,7 +33,8 @@ RUN apt-get update \
                wget \
                xvfb \
                zip \
-               vim
+               vim \
+               tmux
 
 # Install RISCV toolchain apt packages
 RUN apt-get install -y \
