@@ -1,0 +1,88 @@
+target C;
+
+/**
+ * Sensors
+ */
+reactor Sensors {
+    output button_out:bool;
+    output bumper_out:int;
+    
+    // Set up functions that allow us to
+    // pull from sensors
+    preamble {=
+        
+    =}
+    
+    // We pull from sensors every 100 msec, for now.
+    timer sensor_pull(100 msec);
+    
+    reaction(sensor_pull) -> button_out, bumper_out {=
+        // Pull from sensors
+        // and decide whether button is pressed
+        // or bumper is bumped
+    =}
+}
+
+/**
+ * The robot also has motors to make it move.
+ */
+reactor Motors {
+    input _in:int[2];
+    
+    // Set up functions that allow us to
+    // trigger the motors
+    preamble {=
+        
+    =}
+    
+    reaction(_in) {=
+        // Trigger the motors based on _in
+    =}
+}
+
+/**
+ * The controller for the state machine
+ */
+reactor Controller {
+    input bumped:int;
+    input pressed:bool;
+    output move:int[2](0, 0);
+    
+    // State variables for the state machine
+    state _state:int(0);
+    // TODO: fill in other state machine variables
+    state driving_speed:int(80);
+    state stop_speed:int(0);
+    
+    reaction(pressed, bumped) -> move {=
+        // Paste the state machine here
+        switch(self->_state) {
+            // OFF
+            case 0 : {
+                // Tell the motors to stop
+                SET(move, {self->stop_speed, self->stop_speed});
+            }
+            // DRIVING
+            case 1 : {
+                
+            }
+            // TURNING
+            case 2 : {
+                
+            }
+        }
+    =}
+}
+
+/**
+ * This is the main reactor.
+ */
+main reactor Robot {
+    sensors		= new Sensors();
+    motors 		= new Motors();
+    controller 	= new Controller();
+    
+    sensors.button_out 	-> controller.pressed;
+    sensors.bumper_out 	-> controller.bumped;
+    controller.move		-> motors._in;
+}
