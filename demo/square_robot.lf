@@ -1,42 +1,61 @@
-target C;
+target C {
+    threads: 1,
+    keepalive: true
+};
 
-/**
- * Sensors
- */
 reactor Sensors {
+    preamble {=
+        // Thread to read input characters until an EOF is received.
+        // Each time a newline is received, schedule a user_response action.
+        void* read_input(void* button_press) {
+            int c;
+            while(1) {
+                while((c = getchar()) != '\n') {
+                    if (c == EOF) break;
+                }
+                schedule_copy(button_press, 0, &c, 1);
+                if (c == EOF) break;
+            }
+            return NULL;
+        }
+    =}
+    
     output button_out:bool;
     output bumper_out:int;
     
-    // Set up functions that allow us to
-    // pull from sensors
-    preamble {=
-        
-    =}
+    state button:bool(false);
+    
+    // Simulated by the return key
+    physical action button_press:char;
     
     // We pull from sensors every 100 msec, for now.
-    timer sensor_pull(100 msec);
+    timer sensor_pull(0, 100 msec);
     
-    reaction(sensor_pull) -> button_out, bumper_out {=
+    reaction(startup) -> button_press {=
+        // Start the thread that listens for Enter or Return.
+        pthread_t thread_id;
+        pthread_create(&thread_id, NULL, &read_input, button_press);        
+    =}
+    reaction(button_press) -> button_out {=
+        // Toggle button state
+        self->button = !self->button;
+        printf("button %d\n", self->button);
+        SET(button_out, self->button);
+    =}
+    reaction(sensor_pull) -> bumper_out {=
         // Pull from sensors
         // and decide whether button is pressed
         // or bumper is bumped
+        // FIXME: set to false for now.
+        SET(bumper_out, 0);
     =}
 }
 
-/**
- * The robot also has motors to make it move.
- */
 reactor Motors {
-    input _in:int[2];
-    
-    // Set up functions that allow us to
-    // trigger the motors
-    preamble {=
-        
-    =}
-    
+    input _in:int[];
     reaction(_in) {=
         // Trigger the motors based on _in
+        printf("left motor: %d, right motor: %d\n", _in->value[0], _in->value[1]);
     =}
 }
 
@@ -46,31 +65,74 @@ reactor Motors {
 reactor Controller {
     input bumped:int;
     input pressed:bool;
-    output move:int[2](0, 0);
+    output move:int[];
     
     // State variables for the state machine
     state _state:int(0);
     // TODO: fill in other state machine variables
     state driving_speed:int(80);
     state stop_speed:int(0);
+    state driving_distance:int(0);
+    state turning_distance:int(0);
     
-    reaction(pressed, bumped) -> move {=
+    reaction(pressed) {=
+        if (pressed->is_present && pressed->value == true) {
+            self->_state = 1;
+        }
+        else if (pressed->is_present && pressed->value == false) {
+            self->_state = 0;
+        }
+    =}
+    reaction(bumped) -> move {=
+        // Dynamically allocate an output array of length 2.
+        int* array = malloc(2 * sizeof(int));
+        SET_ARRAY(move, array, sizeof(int), 2);
+        
         // Paste the state machine here
         switch(self->_state) {
             // OFF
             case 0 : {
-                // Tell the motors to stop
-                SET(move, {self->stop_speed, self->stop_speed});
+                printf("State OFF\n");
+                move->value[0] = self->stop_speed;
+                move->value[1] = self->stop_speed;
+                break;
             }
             // DRIVING
             case 1 : {
+                printf("State DRIVING\n");
+                // FIXME: need to use sensors
+                self->driving_distance += 1; 
                 
+                move->value[0] = self->driving_speed;
+                move->value[1] = self->driving_speed;
+                
+                if (self->driving_distance > 20) {
+                    self->driving_distance = 0;
+                    self->turning_distance = 0;
+                    
+                    self->_state = 2;
+                }
+                break;
             }
             // TURNING
             case 2 : {
+                printf("State TURNING\n");
+                // FIXME: need to use sensors
+                self->turning_distance += 1; 
                 
+                move->value[0] = self->driving_speed;
+                move->value[1] = -1 * self->driving_speed;
+                
+                if (self->turning_distance > 10) {
+                    self->turning_distance = 0;
+                    self->driving_distance = 0;
+                    
+                    self->_state = 1;
+                }
+                break;
             }
         }
+        
     =}
 }
 
