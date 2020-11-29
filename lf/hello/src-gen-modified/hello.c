@@ -3,6 +3,25 @@
 #include "ctarget.h"
 #define NUMBER_OF_FEDERATES 1
 #include "core/reactor.c"
+
+// Default nosys implementation of _sbrk
+void *
+_sbrk (incr)
+     int incr;
+{
+   extern char   end; /* Set by linker.  */
+   static char * heap_end;
+   char *        prev_heap_end;
+
+   if (heap_end == 0)
+     heap_end = & end;
+
+   prev_heap_end = heap_end;
+   heap_end += incr;
+
+   return (void *) prev_heap_end;
+}
+
 // =============== START reactor class Minimal
 typedef struct {
     int bank_index;
@@ -16,8 +35,10 @@ typedef struct {
 void minimalreaction_function_0(void* instance_args) {
     minimal_self_t* self = (minimal_self_t*)instance_args;
     #line 6 "file:/lf-flexpret-scripts/lf/test/hello.lf"
-    // printf("Hello world.\n");
-        
+    
+    // When using newlib without specifying a spec,
+    // this printf() call will generate trap_instruction_access_fault
+    // printf("Hello world.\n");    
 }
 minimal_self_t* new_Minimal() {
     minimal_self_t* self = (minimal_self_t*)calloc(1, sizeof(minimal_self_t));

@@ -34,6 +34,8 @@ THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "reactor_common.c"
 //#include <assert.h>
 
+#include "../spike_util.c"
+
 /**
  * Schedule the specified trigger at current_time plus the offset of the
  * specified trigger plus the delay.
@@ -67,7 +69,7 @@ handle_t _lf_schedule_copy(void* action, interval_t offset, void* value, int len
         return schedule_token(action, offset, NULL);
     }
     if (trigger == NULL || trigger->token == NULL || trigger->token->element_size <= 0) {
-        fprintf(stderr, "ERROR: schedule: Invalid trigger or element size.\n");
+        // fprintf(stderr, "ERROR: schedule: Invalid trigger or element size.\n");
         return -1;
     }
     // printf("DEBUG: schedule_copy: Allocating memory for payload (token value): %p\n", trigger);
@@ -148,9 +150,9 @@ int wait_until(instant_t logical_time_ns) {
 }
 
 void print_snapshot() {
-    printf(">>> START Snapshot\n");
+    // printf(">>> START Snapshot\n");
     pqueue_dump(reaction_q, stdout, reaction_q->prt);
-    printf(">>> END Snapshot\n");
+    // printf(">>> END Snapshot\n");
 }
 
 /**
@@ -227,7 +229,7 @@ int __do_step() {
             // They can have different deadlines, so we have to check both.
             // Handle the local deadline first.
             if (reaction->deadline > 0LL && physical_time > current_time + reaction->deadline) {
-                printf("Deadline violation.\n");
+                // printf("Deadline violation.\n");
                 // Deadline violation has occurred.
                 violation = true;
                 // Invoke the local handler, if there is one.
@@ -298,7 +300,6 @@ int next() {
         // Time has not advanced to the time of the event.
         // There may be a new earlier event on the queue.
         event_t* new_event = (event_t*)pqueue_peek(event_q);
-        printf("HERE\n");
         if (new_event == event) {
             // There is no new event. If the timeout time has been reached,
             // or if the maximum time has been reached (unlikely), then return.
@@ -306,12 +307,12 @@ int next() {
                 stop_requested = true;
                 return 0;
             }
-            printf("DEBUG: Setting current (elapsed) time to %lld.\n", next_time - start_time);
+            // printf("DEBUG: Setting current (elapsed) time to %lld.\n", next_time - start_time);
         } else {
             // Handle the new event.
             event = new_event;
             next_time = event->time;
-            printf("DEBUG: New event at (elapsed) time %lld.\n", next_time - start_time);
+            // printf("DEBUG: New event at (elapsed) time %lld.\n", next_time - start_time);
         }
     }
 
@@ -357,10 +358,14 @@ int main(int argc, char* argv[]) {
         while (next() != 0 && !stop_requested);
         wrapup();
         termination();
-        return 0;
+        
+        // return 0;
+        __spike_return(0);
     } else {
-        printf("DEBUG: invoking termination.\n");
+        // printf("DEBUG: invoking termination.\n");
         termination();
-        return -1;
+
+        // return -1;
+        __spike_return(1);
     }
 }
