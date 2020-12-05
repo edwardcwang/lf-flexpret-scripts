@@ -24,5 +24,6 @@ Bare-metal LF with GDB Workflow
 8. In window 2, `cd gdb/` and do `openocd -f spike.cfg`
 9. In window 3 (and subsequent actions will happen in this window), `cd <lf_prog_dir>/src-gen` and use `riscv32-unknown-elf-gdb <prog_bin>`
 10. After `gdb` prompt shows up, type in `target remote localhost:3333`
-11. There will be a spin wait at the beginning. Disable it to continue program execution by doing `print wait = 0`
-12. Now feel free to use all of your favorite `gdb` commands to debug the program!
+11. Then, change the source dir to the project directory in `gdb` using `dir <lf_prog_dir>` (e.g. `$(gdb) dir ../../timer`). This is used to prevent certain "file not found" errors in `gdb`
+12. There will be a spin wait at the beginning. Disable it to continue program execution by doing `print wait = 0`
+13. Now feel free to use all of your favorite `gdb` commands to debug the program!
