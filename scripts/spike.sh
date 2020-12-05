@@ -8,4 +8,7 @@ echo "PC starts at: ${pc_start}"
 
 # Use -d for single-step debugging
 # FlexPRET does not use the C extension.
-spike -d --isa=RV32IMAC -m0x20000000:0x2000,0x40000000:0x1000,0x80000000:0x20000 -l $1
+# spike -d --isa=RV32IMAC -m0x20000000:0x2000,0x40000000:0x1000,0x80000000:0x20000 -l $1
+
+# Debug with GDB
+spike --rbb-port=9824 --isa=RV32IMAC -m0x20000000:0x2000,0x40000000:0x1000,0x80000000:0x20000 $1
