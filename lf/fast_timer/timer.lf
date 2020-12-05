@@ -1,0 +1,15 @@
+target C {
+    fast: true
+};
+
+main reactor Timer {
+
+    timer t(100 msec);
+    state s:int(0);
+    state _time:{=long long=};
+
+    reaction(t) {=
+        self->s += 1;
+        self->_time = get_elapsed_physical_time();
+    =}
+}
