@@ -1,6 +1,4 @@
-target C {
-    fast: true
-};
+target C;
 
 main reactor Timer {
 
