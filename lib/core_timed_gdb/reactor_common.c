@@ -161,7 +161,8 @@ instant_t get_physical_time() {
 instant_t get_elapsed_physical_time() {
     struct timespec physicalTime;
     clock_gettime(CLOCK_REALTIME, &physicalTime);
-    return physicalTime.tv_sec * BILLION + physicalTime.tv_nsec - physical_start_time;
+    long long ret = physicalTime.tv_sec * BILLION + physicalTime.tv_nsec - physical_start_time;
+    return ret;
 }
 
 /**
@@ -1730,8 +1731,9 @@ int clock_gettime(clockid_t clk_id, struct timespec *tp) {
 // FIXME: the multithreaded version needs to take care of rem.
 int nanosleep(const struct timespec *req, struct timespec *rem) {
     
-    struct timespec ts = __clock_gettime();
-    while (ts.tv_sec < req->tv_sec || (ts.tv_sec == req->tv_sec && ts.tv_nsec <= req->tv_nsec)) {
+    struct timespec start_time = __clock_gettime();
+    struct timespec ts = start_time;
+    while (ts.tv_sec < start_time.tv_sec + req->tv_sec || (ts.tv_sec == start_time.tv_sec + req->tv_sec && ts.tv_nsec <= start_time.tv_nsec + req->tv_nsec)) {
         ts = __clock_gettime();
     }
 
