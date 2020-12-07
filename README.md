@@ -16,7 +16,7 @@ Bare-metal LF with GDB Workflow
 =================
 1. Write the LF program
 2. Generate C code using `lfc -n <prog>.lf`
-3. Swap out `<lf_prog_dir>/src-gen/core` with `lib/core_gdb`
+3. Swap out `<lf_prog_dir>/src-gen/core` with `lib/core_timed_gdb`
 4. Also copy `lib/start.S` into `src-gen`
 5. Compile `src-gen/<prog>.c` using `scripts/compile.sh`
 6. Start 3 different screen/tmux windows
