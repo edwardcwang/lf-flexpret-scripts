@@ -6,42 +6,42 @@
 // =============== START reactor class Timer
 typedef struct {
     int bank_index;
-    #line 8 "file:/lf-flexpret-scripts/lf/timer/timer.lf"
+    #line 6 "file:/lf-flexpret-scripts/lf/timer/timer.lf"
     int s;
-    #line 9 "file:/lf-flexpret-scripts/lf/timer/timer.lf"
+    #line 7 "file:/lf-flexpret-scripts/lf/timer/timer.lf"
     long long _time;
-    #line 11 "file:/lf-flexpret-scripts/lf/timer/timer.lf"
+    #line 9 "file:/lf-flexpret-scripts/lf/timer/timer.lf"
     reaction_t ___reaction_0;
-    #line 7 "file:/lf-flexpret-scripts/lf/timer/timer.lf"
+    #line 5 "file:/lf-flexpret-scripts/lf/timer/timer.lf"
     trigger_t ___t;
-    #line 7 "file:/lf-flexpret-scripts/lf/timer/timer.lf"
+    #line 5 "file:/lf-flexpret-scripts/lf/timer/timer.lf"
     reaction_t* ___t_reactions[1];
 } timer_self_t;
 void timerreaction_function_0(void* instance_args) {
     timer_self_t* self = (timer_self_t*)instance_args;
-    #line 12 "file:/lf-flexpret-scripts/lf/timer/timer.lf"
+    #line 10 "file:/lf-flexpret-scripts/lf/timer/timer.lf"
     self->s += 1;
     self->_time = get_elapsed_physical_time();
         
 }
 timer_self_t* new_Timer() {
     timer_self_t* self = (timer_self_t*)calloc(1, sizeof(timer_self_t));
-    #line 11 "file:/lf-flexpret-scripts/lf/timer/timer.lf"
+    #line 9 "file:/lf-flexpret-scripts/lf/timer/timer.lf"
     self->___reaction_0.function = timerreaction_function_0;
-    #line 11 "file:/lf-flexpret-scripts/lf/timer/timer.lf"
+    #line 9 "file:/lf-flexpret-scripts/lf/timer/timer.lf"
     self->___reaction_0.self = self;
-    #line 11 "file:/lf-flexpret-scripts/lf/timer/timer.lf"
+    #line 9 "file:/lf-flexpret-scripts/lf/timer/timer.lf"
     self->___reaction_0.deadline_violation_handler = NULL;
-    #line 11 "file:/lf-flexpret-scripts/lf/timer/timer.lf"
+    #line 9 "file:/lf-flexpret-scripts/lf/timer/timer.lf"
     self->___reaction_0.tardy_handler = NULL;
-    #line 7 "file:/lf-flexpret-scripts/lf/timer/timer.lf"
+    #line 5 "file:/lf-flexpret-scripts/lf/timer/timer.lf"
     self->___t.last = NULL;
-    #line 7 "file:/lf-flexpret-scripts/lf/timer/timer.lf"
-    #line 7 "file:/lf-flexpret-scripts/lf/timer/timer.lf"
+    #line 5 "file:/lf-flexpret-scripts/lf/timer/timer.lf"
+    #line 5 "file:/lf-flexpret-scripts/lf/timer/timer.lf"
     self->___t_reactions[0] = &self->___reaction_0;
-    #line 7 "file:/lf-flexpret-scripts/lf/timer/timer.lf"
+    #line 5 "file:/lf-flexpret-scripts/lf/timer/timer.lf"
     self->___t.reactions = &self->___t_reactions[0];
-    #line 7 "file:/lf-flexpret-scripts/lf/timer/timer.lf"
+    #line 5 "file:/lf-flexpret-scripts/lf/timer/timer.lf"
     self->___t.number_of_reactions = 1;
     self->___t.is_timer = true;
     return self;
@@ -63,10 +63,7 @@ void delete_Timer(timer_self_t* self) {
 }
 // =============== END reactor class Timer
 
-char* __default_argv[] = {"X", "-f", "true"};
 void __set_default_command_line_options() {
-    default_argc = 3;
-    default_argv = __default_argv;
 }
 // Array of pointers to timer triggers to be scheduled in __initialize_timers().
 trigger_t* __timer_triggers[1];
@@ -86,8 +83,8 @@ void __initialize_trigger_objects() {
     //***** Start initializing Timer
     static int timer_initial_s = 0;
     timer_self->s = timer_initial_s;
-    timer_self->___t.offset = MSEC(100);
-    timer_self->___t.period = 0;
+    timer_self->___t.offset = 0;
+    timer_self->___t.period = SEC(1);
     __timer_triggers[0] = &timer_self->___t;
     //***** End initializing Timer
     // Populate arrays of trigger pointers.

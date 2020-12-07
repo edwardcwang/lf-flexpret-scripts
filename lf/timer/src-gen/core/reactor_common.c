@@ -161,7 +161,8 @@ instant_t get_physical_time() {
 instant_t get_elapsed_physical_time() {
     struct timespec physicalTime;
     clock_gettime(CLOCK_REALTIME, &physicalTime);
-    return physicalTime.tv_sec * BILLION + physicalTime.tv_nsec - physical_start_time;
+    long long ret = physicalTime.tv_sec * BILLION + physicalTime.tv_nsec - physical_start_time;
+    return ret;
 }
 
 /**
@@ -1692,14 +1693,50 @@ int nanosleep(const struct timespec *req, struct timespec *rem) {
 // ********** End Windows Support
 
 // ********** RISC-V Bare Metal Support
-int clock_gettime(clockid_t clk_id, struct timespec *tp) {
-    tp->tv_sec = 0;
-    tp->tv_nsec = 0;
+struct timespec __clock_gettime() {
+    
+    uint32_t cycle_high;
+    uint32_t cycle_low;
+    struct timespec ts;
 
+    asm(
+    "read_cycle:\n"
+        "rdcycleh t0\n"
+        "rdcycle %1\n"
+        "rdcycleh %0\n"
+        "bne t0, %0, read_cycle"
+    : "=r"(cycle_high), "=r"(cycle_low)// outputs
+    : // inputs
+    : "t0" // clobbers
+    );
+
+    // Convert cycles to seconds and nanoseconds
+    const uint32_t CLOCK_FREQ = 100000000; // 100 MHz
+    const uint32_t NANOSEC_PER_SEC = 1000000000;
+    const uint32_t CYCLES_PER_NANOSEC = CLOCK_FREQ / NANOSEC_PER_SEC;
+    const float NSEC_PER_CYCLE = NANOSEC_PER_SEC / CLOCK_FREQ;
+
+    ts.tv_sec = (time_t) (cycle_low / CLOCK_FREQ) + (time_t) (cycle_high * (UINT32_MAX / CLOCK_FREQ) + (cycle_high / CLOCK_FREQ));
+    ts.tv_nsec = (long) ((uint32_t) (cycle_low * NSEC_PER_CYCLE) % NANOSEC_PER_SEC);
+
+    return ts;
+}
+
+int clock_gettime(clockid_t clk_id, struct timespec *tp) {
+
+    *tp = __clock_gettime();
     return 0;
 }
 
+// FIXME: the multithreaded version needs to take care of rem.
 int nanosleep(const struct timespec *req, struct timespec *rem) {
+    
+    struct timespec start_time = __clock_gettime();
+    struct timespec ts = start_time;
+    while (ts.tv_sec < start_time.tv_sec + req->tv_sec || (ts.tv_sec == start_time.tv_sec + req->tv_sec && ts.tv_nsec <= start_time.tv_nsec + req->tv_nsec)) {
+        ts = __clock_gettime();
+    }
+
     return 0;
 }
 // ********** End RISC-V Bare Metal Support
