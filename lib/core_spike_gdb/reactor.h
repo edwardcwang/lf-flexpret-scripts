@@ -792,5 +792,10 @@ int nanosleep(const struct timespec *req, struct timespec *rem);
 #endif
 //  ******** End Windows Support ********  //
 
+// ********** RISC-V Bare Metal Support
+int clock_gettime(clockid_t clk_id, struct timespec *tp);
+int nanosleep(const struct timespec *req, struct timespec *rem);
+// ********** End RISC-V Bare Metal Support
+
 #endif /* REACTOR_H */
 /** @} */
