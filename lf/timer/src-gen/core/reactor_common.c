@@ -1714,6 +1714,7 @@ struct timespec __clock_gettime() {
     const uint32_t CLOCK_FREQ = 100000000; // 100 MHz
     const uint32_t NANOSEC_PER_SEC = 1000000000;
     const uint32_t CYCLES_PER_NANOSEC = CLOCK_FREQ / NANOSEC_PER_SEC;
+    // FIXME: cast to float
     const float NSEC_PER_CYCLE = NANOSEC_PER_SEC / CLOCK_FREQ;
 
     ts.tv_sec = (time_t) (cycle_low / CLOCK_FREQ) + (time_t) (cycle_high * (UINT32_MAX / CLOCK_FREQ) + (cycle_high / CLOCK_FREQ));

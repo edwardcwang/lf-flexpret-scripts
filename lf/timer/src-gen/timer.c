@@ -6,11 +6,11 @@
 // =============== START reactor class Timer
 typedef struct {
     int bank_index;
-    #line 6 "file:/lf-flexpret-scripts/lf/timer/timer.lf"
-    int s;
     #line 7 "file:/lf-flexpret-scripts/lf/timer/timer.lf"
+    int s;
+    #line 8 "file:/lf-flexpret-scripts/lf/timer/timer.lf"
     long long _time;
-    #line 9 "file:/lf-flexpret-scripts/lf/timer/timer.lf"
+    #line 10 "file:/lf-flexpret-scripts/lf/timer/timer.lf"
     reaction_t ___reaction_0;
     #line 5 "file:/lf-flexpret-scripts/lf/timer/timer.lf"
     trigger_t ___t;
@@ -19,20 +19,20 @@ typedef struct {
 } timer_self_t;
 void timerreaction_function_0(void* instance_args) {
     timer_self_t* self = (timer_self_t*)instance_args;
-    #line 10 "file:/lf-flexpret-scripts/lf/timer/timer.lf"
+    #line 11 "file:/lf-flexpret-scripts/lf/timer/timer.lf"
     self->s += 1;
     self->_time = get_elapsed_physical_time();
         
 }
 timer_self_t* new_Timer() {
     timer_self_t* self = (timer_self_t*)calloc(1, sizeof(timer_self_t));
-    #line 9 "file:/lf-flexpret-scripts/lf/timer/timer.lf"
+    #line 10 "file:/lf-flexpret-scripts/lf/timer/timer.lf"
     self->___reaction_0.function = timerreaction_function_0;
-    #line 9 "file:/lf-flexpret-scripts/lf/timer/timer.lf"
+    #line 10 "file:/lf-flexpret-scripts/lf/timer/timer.lf"
     self->___reaction_0.self = self;
-    #line 9 "file:/lf-flexpret-scripts/lf/timer/timer.lf"
+    #line 10 "file:/lf-flexpret-scripts/lf/timer/timer.lf"
     self->___reaction_0.deadline_violation_handler = NULL;
-    #line 9 "file:/lf-flexpret-scripts/lf/timer/timer.lf"
+    #line 10 "file:/lf-flexpret-scripts/lf/timer/timer.lf"
     self->___reaction_0.tardy_handler = NULL;
     #line 5 "file:/lf-flexpret-scripts/lf/timer/timer.lf"
     self->___t.last = NULL;
