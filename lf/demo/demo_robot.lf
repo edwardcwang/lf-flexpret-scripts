@@ -1,0 +1,173 @@
+target C {
+    timeout: 15 sec
+};
+
+reactor Sensors {    
+    output button_out:bool;
+    output bumper_out:bool;
+    
+    state button:bool(false);
+    state time_to_next_bump:int(25);
+    
+    // Simulated by the return key
+    logical action button_press:char;
+    
+    // We pull from sensors every 100 msec, for now.
+    timer sensor_pull(0, 100 msec);
+    
+    reaction(startup) -> button_press {=
+        schedule(button_press, 0);       
+    =}
+    
+    // Toggle button state
+    reaction(button_press) -> button_out {=
+        self->button = !self->button;
+        printf("Button status: %d\n", self->button);
+        SET(button_out, self->button);
+    =}
+    
+    // Pull from sensors
+    // and decide whether button is pressed
+    // or bumper is bumped
+    reaction(sensor_pull) -> bumper_out {=
+		if (self->time_to_next_bump == 0) {
+            SET(bumper_out, true);
+            printf("Bumper detects an obstacle!\n");
+            self->time_to_next_bump = 25;
+        } else {
+            SET(bumper_out, false);
+            self->time_to_next_bump--;
+        }
+    =}
+}
+
+/**
+ * The controller for the state machine
+ */
+reactor Controller {
+    input bumped:bool;
+    input pressed:bool;
+    output move:int[];
+    
+    // State variables for the state machine
+    state _state:int(0);
+    state driving_speed:int(80);
+    state stop_speed:int(0);
+    state driving_distance:int(0);
+    state backing_distance:int(0);
+    state turning_distance:int(0);
+    
+    reaction(pressed) {=
+        if (pressed->is_present && pressed->value == true) {
+            self->_state = 1;
+        }
+        else if (pressed->is_present && pressed->value == false) {
+            self->_state = 0;
+        }
+    =}
+    reaction(bumped) -> move {=
+        // Dynamically allocate an output array of length 2.
+        int* array = malloc(2 * sizeof(int));
+        SET_ARRAY(move, array, sizeof(int), 2);
+        
+        // Paste the state machine here
+        switch(self->_state) {
+            // OFF
+            case 0 : {
+                printf("State OFF\n");
+                move->value[0] = self->stop_speed;
+                move->value[1] = self->stop_speed;
+                break;
+            }
+            // DRIVING
+            case 1 : {
+                if (bumped->value == true) {
+                    self->_state = 3;
+                    break;
+                }
+                
+                printf("State DRIVING\n");
+                // FIXME: need to use sensors
+                self->driving_distance += 1; 
+                
+                move->value[0] = self->driving_speed;
+                move->value[1] = self->driving_speed;
+                
+                if (self->driving_distance > 20) {
+                    self->driving_distance = 0;
+                    self->_state = 2;
+                }
+                break;
+            }
+            // TURNING
+            case 2 : {
+                if (bumped->value == true) {
+                    self->_state = 3;
+                    break;
+                }
+                
+                printf("State TURNING\n");
+                // FIXME: need to use sensors
+                self->turning_distance += 1; 
+                
+                move->value[0] = self->driving_speed;
+                move->value[1] = -1 * self->driving_speed;
+                
+                if (self->turning_distance > 10) {
+                    self->turning_distance = 0;                    
+                    self->_state = 1;
+                }
+                break;
+            }
+            //BACKING UP
+            case 3: {
+                printf("State BACKING UP\n");
+                // FIXME: need to use sensors
+                self->backing_distance += 1;
+                //cliff sensor
+                move->value[0] = -1 * self->driving_speed;
+                move->value[1] = -1 * self->driving_speed;
+
+                if (self->backing_distance >= 10) {
+                    self->backing_distance = 0;
+                    self->_state = 2;
+                }
+                break;
+            }
+        }
+        
+    =}
+    
+    reaction(bumped) {=
+        // Logging sensor inputs...
+    =} deadline(10 msec) {=
+        printf("Soft deadline missed. Waiting for the next input.\n");
+    =}
+}
+
+reactor Motors {
+    input _in:int[];
+    state stopped:bool(false);
+    reaction(_in) {=
+        if (!self->stopped) {
+        	printf("left motor: %d, right motor: %d\n", _in->value[0], _in->value[1]);   
+        }
+    =} deadline(20 msec) {=
+        self->stopped = true;
+        printf("Hard deadline missed. Emergency stop.\n");
+        request_stop();
+    =}
+}
+
+/**
+ * This is the main reactor.
+ */
+main reactor Robot {
+    sensors		= new Sensors();
+    motors 		= new Motors();
+    controller 	= new Controller();
+    
+    sensors.button_out 	-> controller.pressed;
+    sensors.bumper_out 	-> controller.bumped;
+    controller.move		-> motors._in;
+}
