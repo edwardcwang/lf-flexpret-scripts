@@ -272,14 +272,16 @@ void* pqueue_peek(pqueue_t *q) {
 void pqueue_dump(pqueue_t *q, FILE *out, pqueue_print_entry_f print) {
     int i;
 
-    fprintf(stdout,"posn\tleft\tright\tparent\tmaxchild\t...\n");
+    // fprintf(stdout,"posn\tleft\tright\tparent\tmaxchild\t...\n");
     for (i = 1; i < q->size ;i++) {
+        /*
         fprintf(stdout,
                 "%d\t%d\t%d\t%d\t%ul\t",
                 i,
                 left(i), right(i), parent(i),
                 (unsigned int)maxchild(q, i));
         print(out, q->d[i]);
+        */
     }
 }
 
