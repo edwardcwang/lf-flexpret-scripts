@@ -10,7 +10,7 @@ RISCV_GCC ?= $(RISCV_PREFIX)gcc
 RISCV_GCC_OPTS ?= \
 				-DPREALLOCATE=1 -mcmodel=medany -static \
 				-std=gnu99 \
-				-Og \
+				-O0 \
 				-ffast-math -fno-common -fno-builtin-printf
 
 RISCV_LINK ?= $(RISCV_GCC) -T $(src_dir)lib/common/link.ld $(incs)
