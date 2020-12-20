@@ -10,11 +10,11 @@ RISCV_GCC ?= $(RISCV_PREFIX)gcc
 RISCV_GCC_OPTS ?= \
 				-DPREALLOCATE=1 -mcmodel=medany -static \
 				-std=gnu99 \
-				-Og \
+				-Og -g \
 				-ffast-math -fno-common -fno-builtin-printf
 
-RISCV_LINK ?= $(RISCV_GCC) -T $(src_dir)lib/common/link.ld $(incs)
-RISCV_LINK_OPTS ?= -g -static -nostartfiles -lm -lgcc -T $(src_dir)lib/common/link.ld
+RISCV_LINK ?= $(RISCV_GCC) -T $(src_dir)lib/common/test.ld $(incs)
+RISCV_LINK_OPTS ?= -static -nostartfiles -lm -lgcc -T $(src_dir)lib/common/test.ld
 
 RISCV_OBJDUMP ?= $(RISCV_PREFIX)objdump --disassemble-all --disassemble-zeroes --section=.text --section=.text.startup --section=.text.init --section=.data
 

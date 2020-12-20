@@ -1,8 +1,10 @@
-target C;
+target C {
+    timeout: 1 sec
+};
 
 main reactor Timer {
 
-    timer t(0, 1 sec);
+    timer t(0, 10 msec);
 
     state s:int(0);
     state _time:{=long long=};

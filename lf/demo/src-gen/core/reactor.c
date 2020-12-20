@@ -32,8 +32,8 @@ THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 // RISC-V Bare Metal Support
-#include "bare_metal.c"
-#include "spike_util.c"
+// #include "bare_metal.c"
+// #include "spike_util.c"
 
 #include "reactor_common.c"
 //#include <assert.h>
@@ -349,10 +349,12 @@ int main(int argc, char* argv[]) {
             while (next() != 0);
         }
         termination();
-        __spike_return(0);
+        // __spike_return(0);
+        return 0;
     } else {
         // printf("DEBUG: invoking termination.\n");
         termination();
-        __spike_return(1);
+        // __spike_return(1);
+        return -1;
     }
 }

@@ -1,5 +1,5 @@
 target C {
-    timeout: 15 sec
+    timeout: 10 msec
 };
 
 reactor Sensors {    

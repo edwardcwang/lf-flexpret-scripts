@@ -63,7 +63,7 @@ void error_print(char* format, ...) {
     strcat(error_message, format);
     strcat(error_message, "\n");
     va_start (args, format);
-    vfprintf(stderr, error_message, args);
+    // vfprintf(stderr, error_message, args);
     va_end (args);
 }
 
@@ -88,7 +88,7 @@ void error_print_and_exit(char* format, ...) {
     strcat(error_message, format);
     strcat(error_message, "\n");
     va_start (args, format);
-    vfprintf(stderr, error_message, args);
+    // vfprintf(stderr, error_message, args);
     exit(EXIT_FAILURE);
 }
 
@@ -142,10 +142,10 @@ void read_from_socket(int socket, int num_bytes, unsigned char* buffer, char* fo
             // that we should try again (@see man errno).
             continue;
         } else if (more < 0) {
-            fprintf(stderr, "ERROR socket is not connected. ");
+            // fprintf(stderr, "ERROR socket is not connected. ");
             error_print_and_exit(format, args);
         } else if (more == 0) {
-            fprintf(stderr, "ERROR peer sent EOF. ");
+            // fprintf(stderr, "ERROR peer sent EOF. ");
             error_print_and_exit(format, args);
         }
         bytes_read += more;
@@ -195,10 +195,10 @@ void write_to_socket(int socket, int num_bytes, unsigned char* buffer, char* for
             // that we should try again (@see man errno).
             continue;
         } else if (more < 0) {
-            fprintf(stderr, "ERROR socket is not connected. ");
+            // fprintf(stderr, "ERROR socket is not connected. ");
             error_print_and_exit(format, args);
         } else if (more == 0) {
-            fprintf(stderr, "ERROR peer sent EOF.");
+            // fprintf(stderr, "ERROR peer sent EOF.");
             error_print_and_exit(format, args);
         }
         bytes_written += more;
@@ -410,15 +410,15 @@ void extract_header(
 ) {
     // The first two bytes are the ID of the destination reactor.
     *port_id = extract_ushort(buffer);
-    // The next four bytes are the message length.
+    
     // The next two bytes are the ID of the destination federate.
-    *federate_id = extract_ushort(buffer + 2);
+    *federate_id = extract_ushort(&(buffer[sizeof(unsigned short)]));
 
     // printf("DEBUG: Message for port %d of federate %d.\n", *port_id, *federate_id);
     // FIXME: Better error handling needed here.
     assert(*federate_id < NUMBER_OF_FEDERATES);
     // The next four bytes are the message length.
-    *length = extract_int(buffer + 4);
+    *length = extract_int(&(buffer[sizeof(unsigned short) + sizeof(unsigned short)]));
 
     // printf("DEBUG: Federate receiving message to port %d to federate %d of length %d.\n", port_id, federate_id, length);
 }
